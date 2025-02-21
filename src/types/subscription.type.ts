@@ -3,7 +3,7 @@ export enum OrderEvent{
     CANCLE_ORDER = "cancel_order"
 }
 
-export type TOPIC_TYPE = "OrderEvent"
+export type TOPIC_TYPE = "OrderEvents"
 
 export interface MessageType {
     headers? : Record<string, any>;
