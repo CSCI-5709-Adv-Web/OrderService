@@ -83,7 +83,7 @@ npm run dev
 
 Key environment variables:
 
-```plaintext
+```env
 PORT=3001
 MONGODB_URI=mongodb://localhost:27017/order-service
 AUTH_SERVICE_URL=http://auth-service:3000
