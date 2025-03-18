@@ -1,50 +1,111 @@
-## ```.env``` file content
+### Order Service
 
-```.env
-DB_URL=URL_OF_DB
-APP_PORT=9002
-CLIENT_ID=order-service
-GROUP_ID=order-service-group
-BROKER_1=localhost:9092
-AUTH_SERVICE_BASE_URL=auth_service_url
+## Overview
+
+The Order Service manages delivery orders for the Commune Drop platform. It serves as the central coordination point between customers, carriers, and other services in the platform.
+
+## Features
+
+- Create and manage delivery orders
+- Track order status in real-time
+- Cancel or modify existing orders
+- Retrieve order history and details
+- Coordinate with other services for a complete delivery workflow
+
+
+## Dependencies
+
+- Auth Service: User authentication and authorization
+- Valuation Service: Delivery price calculation
+- Carrier Service: Finding and assigning riders
+- Location Service: Order and rider tracking
+- Payment Service: Processing payments
+- Notification Service: Sending status updates
+
+
+## Technology Stack
+
+- Runtime: Node.js
+- Framework: Express.js
+- Database: MongoDB
+- Message Queue: RabbitMQ/Kafka
+- Caching: Redis
+
+
+## Setup
+
+### Prerequisites
+
+- Node.js v16+
+- MongoDB
+- Redis
+
+
+### Quick Start
+
+1. Clone the repository
+
+
+```shellscript
+git clone https://github.com/commune-drop/order-service.git
+cd order-service
 ```
 
-## ```docker-compose.yml``` file content
+2. Install dependencies
 
-you have to run ```docker-compose.yml``` file in order to enable kafka
 
-```.yml
-version: "2"
-
-services:
-  zookeeper:
-    image: confluentinc/cp-zookeeper:latest
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-    ports:
-      - "2181:2181"
-
-  kafka:
-    image: confluentinc/cp-kafka:latest
-    depends_on:
-      - zookeeper
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
-      KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:9092"
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    ports:
-      - "9092:9092"
-
+```shellscript
+npm install
 ```
 
+3. Configure environment variables
 
-command to run this docker compose file is:
 
+```shellscript
+cp .env.example .env
+# Edit .env with your configuration
 ```
 
-docker compose up
+4. Start the service
 
+
+```shellscript
+npm start
 ```
 
+For development:
+
+```shellscript
+npm run dev
+```
+
+## Configuration
+
+Key environment variables:
+
+```plaintext
+PORT=3001
+MONGODB_URI=mongodb://localhost:27017/order-service
+AUTH_SERVICE_URL=http://auth-service:3000
+VALUATION_SERVICE_URL=http://valuation-service:3004
+CARRIER_SERVICE_URL=http://carrier-service:3006
+LOCATION_SERVICE_URL=http://location-service:3002
+PAYMENT_SERVICE_URL=http://payment-service:3003
+NOTIFICATION_SERVICE_URL=http://notification-service:3005
+```
+
+## Status Events
+
+The service publishes these events when order status changes:
+
+- `order.created`
+- `order.accepted`
+- `order.picked_up`
+- `order.in_transit`
+- `order.delivered`
+- `order.cancelled`
+
+
+## License
+
+MIT
