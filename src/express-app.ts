@@ -11,10 +11,10 @@ export const ExpressApp = async () => {
   app.use(express.json());
   app.use(httpLogger);
 
-  await InitializeBroker();
+  // await InitializeBroker();
 
   //   app.use(cartRoutes);
-  app.use(orderRoutes);
+  app.use("/order", orderRoutes);
 
   app.use("/", (req: Request, res: Response, _: NextFunction) => {
     res.status(200).json({ message: "I am healthy!" });

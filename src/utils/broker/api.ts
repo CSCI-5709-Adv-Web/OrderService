@@ -1,6 +1,5 @@
 import axios from "axios";
 import { AuthorizeError, NotFoundError } from "../error";
-import { User } from "../../dto/User.Model";
 
 const AUTH_SERVICE_BASE_URL =
   process.env.AUTH_SERVICE_BASE_URL || "http://localhost:9000";
@@ -19,7 +18,7 @@ export const ValidateUser = async (token: string) => {
     if (response.status !== 200) {
       throw new AuthorizeError("user not authorised");
     }
-    return { email: "jashpatel", id: 1 } as User;
+    // return { email: "jashpatel", id: 1 } as User;
   } catch (error) {
     throw new AuthorizeError("user not authorised");
   }

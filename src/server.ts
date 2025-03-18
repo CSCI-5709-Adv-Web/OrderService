@@ -1,5 +1,6 @@
 import { ExpressApp } from "./express-app";
 import { logger } from "./utils";
+import { ConnectWithDB } from "./db";
 
 const PORT = process.env.APP_PORT || 9002;
 
@@ -8,6 +9,9 @@ export const StartServer = async () => {
   expressApp.listen(PORT, () => {
     logger.info(`App is listening to ${PORT}`);
   });
+
+  // Connect to MongoDB database
+  ConnectWithDB();
 
   process.on("uncaughtException", async (err) => {
     logger.error(err);
