@@ -76,6 +76,10 @@ const orderSchema = new Schema(
       type: Number,
       required: true,
     },
+    paymentAt: {
+      type: Date,
+      required: false,
+    }
   },
   { timestamps: true }
 );

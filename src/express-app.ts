@@ -13,7 +13,6 @@ export const ExpressApp = async () => {
 
   // await InitializeBroker();
 
-  //   app.use(cartRoutes);
   app.use("/order", orderRoutes);
 
   app.use("/", (req: Request, res: Response, _: NextFunction) => {
