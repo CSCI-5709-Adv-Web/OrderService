@@ -33,4 +33,4 @@ COPY --from=build /app/dist ./dist
 EXPOSE 9002
 
 # Start the app using the compiled entry point
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/server.js"]
