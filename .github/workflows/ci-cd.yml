@@ -37,15 +37,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Set Kubeconfig for kind Cluster
-        run: |
-          # Set up kubeconfig to point to the running kind cluster
-          kind get kubeconfig --name k8s-cluster > $HOME/.kube/config
-
-      - name: Load Docker Image into kind
-        run: |
-          kind load docker-image jashpatel1511/web-order-service:latest
-
       - name: Apply Kubernetes Deployment
         run: |
           cd /home/${{ secrets.VM_USER }}/actions-runner/_work/${{ github.repository }}/k8s
