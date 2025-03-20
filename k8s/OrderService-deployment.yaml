@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: order-service-container
-          image: us-east1-docker.pkg.dev/cloud-a3-453520/cloud-a3-container-first/cloud-a3-container-first:latest
+          image: jashpatel1511/web-order-service:latest
           ports:
             - containerPort: 9002
           env:
