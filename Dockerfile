@@ -10,4 +10,6 @@ COPY . .
 
 EXPOSE 9002
 
-CMD ["node", "src/server.js"]
+RUN npm run build
+
+CMD ["npm", "start"]

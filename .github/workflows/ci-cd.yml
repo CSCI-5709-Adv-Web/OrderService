@@ -42,7 +42,3 @@ jobs:
           kubectl apply -f k8s/OrderService-configMap.yaml
           kubectl apply -f k8s/OrderService-secret.yaml
           kubectl apply -f k8s/OrderService-deployment.yaml
-
-      - name: Wait for Deployment Rollout
-        run: |
-          kubectl rollout status deployment/web-order-service
