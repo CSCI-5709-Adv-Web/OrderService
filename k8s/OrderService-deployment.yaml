@@ -47,4 +47,5 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 9002
-  type: LoadBalancer
+      nodePort: 30080 # You can choose any free port above 30000
+  type: NodePort
