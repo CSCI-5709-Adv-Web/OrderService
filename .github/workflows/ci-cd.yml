@@ -37,9 +37,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: List contents of the repository
+      - name: List the contents of the current directory
         run: |
-          ls -la /home/${{ secrets.VM_USER }}/actions-runner/_work/${{ github.repository }}
+          ls -la /home/${{ secrets.VM_USER }}/actions-runner/_work/
+
 
       - name: Apply Kubernetes Deployment
         run: |
