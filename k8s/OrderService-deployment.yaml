@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-api
+  labels:
+    app: order-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-api
+  template:
+    metadata:
+      labels:
+        app: order-api
+    spec:
+      containers:
+        - name: order-service-container
+          image: us-east1-docker.pkg.dev/cloud-a3-453520/cloud-a3-container-first/cloud-a3-container-first:latest
+          ports:
+            - containerPort: 9002
+          env:
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: order-service-configmap
+                  key: port
+            - name: VALUATION_SERVICE
+              valueFrom:
+                configMapKeyRef:
+                  name: order-service-configmap
+                  key: valuation-service
+            - name: DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: order-service-secret
+                  key: db_url
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+spec:
+  selector:
+    app: order-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9002
+  type: LoadBalancer
