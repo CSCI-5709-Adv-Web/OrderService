@@ -31,7 +31,7 @@ jobs:
   deploy:
     name: Deploy to kind Kubernetes Cluster
     needs: build-and-push # Runs only if build-and-push is successful
-    runs-on: advancedweb-vm1 # Runs on your self-hosted runner
+    runs-on: self-hosted # Runs on your self-hosted runner
 
     steps:
       - name: Checkout Repository
