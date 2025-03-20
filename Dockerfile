@@ -1,11 +1,18 @@
-FROM node:16-alpine AS production
+FROM node:18-alpine
 
 WORKDIR /app
 
-COPY package*.json .
+# Copy only package.json and package-lock.json
+COPY package*.json ./
 
-RUN npm ci --only=production
+# Install production dependencies only
+RUN npm ci
 
+# Copy the compiled files from the build stage
 COPY --from=build /app/dist ./dist
 
-CMD ["node", "dist/server.js"]
+# Expose the port your application will run on
+EXPOSE 9002
+
+# Start the app using the compiled entry point
+CMD ["node", "dist/index.js"]
