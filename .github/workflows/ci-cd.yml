@@ -42,11 +42,11 @@ jobs:
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_region: ${{ secrets.AWS_REGION }}
+          aws_region: us-east-1
 
       - name: Update kubeconfig for EKS
         run: |
-          aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name ${{secrets.AWS_CLUSTER_NAME}}
+          aws eks --region us-east-1 update-kubeconfig --name ${{secrets.AWS_CLUSTER_NAME}}
 
       - name: Apply Kubernetes Resources
         run: |
