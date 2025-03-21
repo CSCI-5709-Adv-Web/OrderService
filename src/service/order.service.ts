@@ -10,7 +10,7 @@ import {
 import {
   getPricingDetailsFromValuationService,
   ValuationResp,
-} from "../service/valutaion.service";
+} from "./valuation.service";
 import { logger } from "../utils";
 
 // Service function to create an order with pricing fetched from an external service
