@@ -6,7 +6,6 @@ import { logger } from "../utils";
 const DB_URL = process.env.DB_URL || "";
 
 export const ConnectWithDB = () => {
-  logger.info(DB_URL);
   mongoose
     .connect(DB_URL, {
       useNewUrlParser: true,
