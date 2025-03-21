@@ -40,18 +40,16 @@ jobs:
       - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_region: us-east-1
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1 # Corrected key name for region
 
       - name: Update kubeconfig for EKS
         run: |
-          aws eks --region us-east-1 update-kubeconfig --name ${{secrets.AWS_CLUSTER_NAME}}
+          aws eks --region us-east-1 update-kubeconfig --name ${{ secrets.AWS_CLUSTER_NAME }}
 
       - name: Apply Kubernetes Resources
         run: |
           kubectl apply -f k8s/OrderService-configMap.yaml
           kubectl apply -f k8s/OrderService-secret.yaml
           kubectl apply -f k8s/OrderService-deployment.yaml
-
-#
