@@ -29,13 +29,24 @@ jobs:
           docker push jashpatel1511/web-order-service:latest
 
   deploy:
-    name: Deploy to Kubernetes Cluster on VM
+    name: Deploy to EKS Cluster
     needs: build-and-push
-    runs-on: self-hosted # Make sure this runner has access to the Kubernetes cluster
+    runs-on: ubuntu-latest # Runs on GitHub-hosted runner
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
+
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: ${{ secrets.AWS_REGION }}
+
+      - name: Update kubeconfig for EKS
+        run: |
+          aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name ${{secrets.AWS_CLUSTER_NAME}}
 
       - name: Apply Kubernetes Resources
         run: |
