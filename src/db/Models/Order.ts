@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose"
 
 const orderSchema = new Schema(
   {
@@ -11,12 +11,12 @@ const orderSchema = new Schema(
       required: true,
     },
     user_id: {
-      type: Schema.Types.ObjectId,
+      type: String, // Changed from Schema.Types.ObjectId to String
       required: true,
       index: true,
     },
     rider_id: {
-      type: Schema.Types.ObjectId,
+      type: String, // Changed from Schema.Types.ObjectId to String
       required: false,
       index: true,
     },
@@ -74,17 +74,18 @@ const orderSchema = new Schema(
       required: true,
     },
     paymentId: {
-      type: Schema.Types.ObjectId,
+      type: String, // Changed from Schema.Types.ObjectId to String
       required: false,
       index: true,
     },
     refundId: {
-      type: Schema.Types.ObjectId,
+      type: String, // Changed from Schema.Types.ObjectId to String
       required: false,
       index: true,
     },
   },
-  { timestamps: true }
-);
+  { timestamps: true },
+)
 
-export const Order = mongoose.model("Order", orderSchema);
+export const Order = mongoose.model("Order", orderSchema)
+

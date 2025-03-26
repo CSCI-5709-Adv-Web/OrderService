@@ -31,7 +31,7 @@ export const AuthMiddleware = async (
     if (decoded.exp && decoded.exp < currentTime) {
       throw new AuthorizeError("Token has expired");
     }
-    const requiredScopes = ["valuation.read", "valuation.write"];
+    const requiredScopes = ["order.read", "order.write"];
     let tokenScopes: string[] = [];
     if (decoded.scope) {
       if (typeof decoded.scope === "string") {
