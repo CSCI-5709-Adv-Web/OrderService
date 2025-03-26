@@ -16,14 +16,14 @@ import { refundOrder } from "./payment.service";
 
 // Service function to create an order with pricing fetched from an external service
 export const createOrderService = async (orderData: CreateOrderProps) => {
-  const { from_address, to_address, vehicle_type } = orderData;
+  const { distance, time, vehicle_type } = orderData;
 
   try {
     // Fetch pricing details from the Valuation Service
     const valuationResponse: ValuationResp =
       await getPricingDetailsFromValuationService(
-        from_address,
-        to_address,
+        distance,
+        time,
         vehicle_type
       );
 
@@ -31,8 +31,6 @@ export const createOrderService = async (orderData: CreateOrderProps) => {
     const orderWithPricing = {
       ...orderData,
       pricing_details: valuationResponse.pricing_details,
-      distance: valuationResponse.distance,
-      time: valuationResponse.time,
     };
 
     // Call the repository to save the orderx
