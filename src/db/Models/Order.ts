@@ -13,10 +13,12 @@ const orderSchema = new Schema(
     user_id: {
       type: Schema.Types.ObjectId,
       required: true,
+      index: true,
     },
     rider_id: {
       type: Schema.Types.ObjectId,
       required: false,
+      index: true,
     },
     status: {
       type: String,
@@ -59,11 +61,6 @@ const orderSchema = new Schema(
       enum: ["BIKE", "CAR", "TRUCK", "WALK"],
       required: true,
     },
-    payment_status: {
-      type: String,
-      enum: ["PAID", "UNPAID"],
-      default: "UNPAID",
-    },
     delivery_instructions: {
       type: String,
       required: false,
@@ -76,10 +73,16 @@ const orderSchema = new Schema(
       type: Number,
       required: true,
     },
-    paymentAt: {
-      type: Date,
+    paymentId: {
+      type: Schema.Types.ObjectId,
       required: false,
-    }
+      index: true,
+    },
+    refundId: {
+      type: Schema.Types.ObjectId,
+      required: false,
+      index: true,
+    },
   },
   { timestamps: true }
 );

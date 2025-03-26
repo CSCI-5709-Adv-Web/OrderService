@@ -44,14 +44,25 @@ export const fetchOrderById = async (orderId: string) => {
   }
 };
 
-export const orderPayment = async (orderId: string) => {
+export const orderPayment = async (orderId: string, paymentId: string) => {
   try {
     await Order.updateOne(
       { _id: orderId },
       {
-        payment_status: "PAID",
-        status: "PAYMENT RECEIVED",
-        paymentAt: new Date(),
+        paymentId,
+      }
+    );
+  } catch (error) {
+    throw new Error("Error while updating payment of order: " + error.message);
+  }
+};
+
+export const refundOrder = async (orderId: string, refundId: string) => {
+  try {
+    await Order.updateOne(
+      { _id: orderId },
+      {
+        refundId,
       }
     );
   } catch (error) {
@@ -76,5 +87,13 @@ export const fetchAllOrdersOfRider = async (riderId: string) => {
     return fetchOrders;
   } catch (error) {
     throw new Error("Error fetching orders: " + error.message);
+  }
+};
+
+export const updateOrderStatus = async (orderId: string, status: string) => {
+  try {
+    await Order.updateOne({ _id: orderId }, { status });
+  } catch (error) {
+    throw new Error("Error updating order status: " + error.message);
   }
 };

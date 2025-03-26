@@ -7,3 +7,4 @@ metadata:
 data:
   port: "9002"
   valuation-service: "http://valuation-api:80/valuation"
+  payment-service: "http://payment-api:80/payment"

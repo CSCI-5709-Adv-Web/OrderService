@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import axios from "axios";
 
-const VALUATION_SERVICE_URL = process.env.VALUATION_SERVICE_URL;
+const VALUATION_SERVICE_URL = process.env.VALUATION_SERVICE;
 
 // Type for pricing details
 export interface ValuationResp {

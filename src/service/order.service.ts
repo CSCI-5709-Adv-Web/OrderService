@@ -6,12 +6,13 @@ import {
   orderPayment,
   fetchAllOrdersOfUser,
   fetchAllOrdersOfRider,
+  updateOrderStatus,
 } from "../repository/order.repository";
 import {
   getPricingDetailsFromValuationService,
   ValuationResp,
 } from "./valuation.service";
-import { logger } from "../utils";
+import { refundOrder } from "./payment.service";
 
 // Service function to create an order with pricing fetched from an external service
 export const createOrderService = async (orderData: CreateOrderProps) => {
@@ -44,43 +45,36 @@ export const createOrderService = async (orderData: CreateOrderProps) => {
 
 export const cancleOrderService = async (orderId: string) => {
   try {
-    const { paymentAt, payment_status } = await fetchOrderById(orderId);
+    const { paymentId } = await fetchOrderById(orderId);
 
-    if (paymentAt) {
-      const currentTime = new Date();
-
-      const oneMinuteAfterPayment = new Date(paymentAt.getTime() + 60 * 1000);
-
-      if (currentTime <= oneMinuteAfterPayment && payment_status === "PAID") {
-        // TODO: refund full amount
-        logger.info(
-          "Full amount is transfer to customer for order: " + orderId
-        );
-      } else {
-        // TODO: refund hald amout and send appropriate amount to rider
-        logger.info(
-          "Half amount is transfer to rider and remaining amount is transfered to customer for order: " +
-            orderId
-        );
+    if (paymentId) {
+      const refundRes = await refundOrder(orderId);
+      if (refundRes) {
+        await cancleOrder(orderId);
       }
+    } else {
+      await cancleOrder(orderId);
     }
-
-    await cancleOrder(orderId);
   } catch (error) {
     throw new Error(error.message);
   }
 };
 
-export const orderPaymentService = async (orderId: string) => {
+export const orderPaymentService = async (
+  orderId: string,
+  paymentId: string
+) => {
   const fetchedOrder = await fetchOrderById(orderId);
   if (
-    fetchedOrder.payment_status === "PAID" ||
-    fetchedOrder.status === "CANCELLED"
+    !(
+      fetchedOrder.status === "ORDER PLACED" ||
+      fetchedOrder.status === "ORDER CONFIRMED"
+    )
   ) {
-    return;
+    throw new Error("Pament already ");
   }
   try {
-    await orderPayment(orderId);
+    await orderPayment(orderId, paymentId);
   } catch (error) {
     throw new Error(error.message);
   }
@@ -98,6 +92,18 @@ export const fetchAllOrdersOfUserService = async (userId: string) => {
 export const fetchAllOrdersOfRiderService = async (riderId: string) => {
   try {
     const fetchedOrders = await fetchAllOrdersOfRider(riderId);
+    return fetchedOrders;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const updateOrderStatusService = async (
+  orderId: string,
+  status: string
+) => {
+  try {
+    const fetchedOrders = await updateOrderStatus(orderId, status);
     return fetchedOrders;
   } catch (error) {
     throw new Error(error.message);

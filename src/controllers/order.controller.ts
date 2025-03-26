@@ -5,13 +5,15 @@ import {
   orderPaymentService,
   fetchAllOrdersOfUserService,
   fetchAllOrdersOfRiderService,
+  updateOrderStatusService,
 } from "../service/order.service"; // Import the service
 import { createApiResponse } from "../utils/response";
 import { logger } from "../utils";
+import { AuthenticatedRequest } from "../types";
 
 // Controller to handle order creation
 export async function createOrderController(
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response
 ): Promise<void> {
   const orderData = req.body;
@@ -29,7 +31,7 @@ export async function createOrderController(
 
 // Controller to handle order creation
 export async function cancleOrderController(
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response
 ): Promise<void> {
   const orderId = req.params.order_id;
@@ -43,12 +45,12 @@ export async function cancleOrderController(
 }
 
 export async function orderPaymentController(
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response
 ): Promise<void> {
-  const orderId = req.params.order_id;
+  const { orderId, paymentId } = req.body;
   try {
-    await orderPaymentService(orderId);
+    await orderPaymentService(orderId, paymentId);
   } catch (error) {
     createApiResponse(
       res,
@@ -59,7 +61,7 @@ export async function orderPaymentController(
 }
 
 export async function fetchAllOrdersOfUserController(
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response
 ): Promise<void> {
   const userId = req.params.user_id;
@@ -76,7 +78,7 @@ export async function fetchAllOrdersOfUserController(
 }
 
 export async function fetchAllOrdersOfRiderController(
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response
 ): Promise<void> {
   const riderId = req.params.rider_id;
@@ -89,5 +91,18 @@ export async function fetchAllOrdersOfRiderController(
       "Faild to fetch orders of user: " + error.message,
       500
     );
+  }
+}
+
+export async function orderUpdateStatusController(
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<void> {
+  const { orderId, status } = req.body;
+  try {
+    await updateOrderStatusService(orderId, status);
+    createApiResponse(res, "Order status updated successfully.", 200);
+  } catch (error) {
+    createApiResponse(res, "Failed to update order: " + error.message, 500);
   }
 }
