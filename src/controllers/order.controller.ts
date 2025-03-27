@@ -34,9 +34,9 @@ export async function cancleOrderController(
   req: AuthenticatedRequest,
   res: Response
 ): Promise<void> {
-  const orderId = req.params.order_id;
+  const { orderId, refundId } = req.body;
   try {
-    await cancleOrderService(orderId);
+    await cancleOrderService(orderId, refundId);
     logger.info("Successfully created order: " + orderId);
     createApiResponse(res, "Order canceled successfully.", 200);
   } catch (error) {

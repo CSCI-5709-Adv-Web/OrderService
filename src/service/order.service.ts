@@ -7,12 +7,12 @@ import {
   fetchAllOrdersOfUser,
   fetchAllOrdersOfRider,
   updateOrderStatus,
+  refundOrder,
 } from "../repository/order.repository";
 import {
   getPricingDetailsFromValuationService,
   ValuationResp,
 } from "./valuation.service";
-import { refundOrder } from "./payment.service";
 
 // Service function to create an order with pricing fetched from an external service
 export const createOrderService = async (orderData: CreateOrderProps) => {
@@ -21,11 +21,7 @@ export const createOrderService = async (orderData: CreateOrderProps) => {
   try {
     // Fetch pricing details from the Valuation Service
     const valuationResponse: ValuationResp =
-      await getPricingDetailsFromValuationService(
-        distance,
-        time,
-        vehicle_type
-      );
+      await getPricingDetailsFromValuationService(distance, time, vehicle_type);
 
     // Combine the pricing details with the order data
     const orderWithPricing = {
@@ -41,17 +37,27 @@ export const createOrderService = async (orderData: CreateOrderProps) => {
   }
 };
 
-export const cancleOrderService = async (orderId: string) => {
+export const cancleOrderService = async (orderId: string, refundId: string) => {
   try {
-    const { paymentId } = await fetchOrderById(orderId);
+    const fetchedOrder = await fetchOrderById(orderId);
 
-    if (paymentId) {
-      const refundRes = await refundOrder(orderId);
+    if (fetchedOrder.status === "CANCELLED") {
+      throw new Error("Order has already been cancelled");
+    }
+    if (
+      !(
+        fetchedOrder.status === "ORDER PLACED" ||
+        fetchedOrder.status === "ORDER CONFIRMED"
+      )
+    ) {
+      throw new Error("Payment doesn't made.");
+    }
+
+    if (fetchedOrder.paymentId) {
+      const refundRes = await refundOrder(orderId, refundId);
       if (refundRes) {
         await cancleOrder(orderId);
       }
-    } else {
-      await cancleOrder(orderId);
     }
   } catch (error) {
     throw new Error(error.message);

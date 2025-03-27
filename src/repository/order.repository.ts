@@ -59,7 +59,7 @@ export const orderPayment = async (orderId: string, paymentId: string) => {
 
 export const refundOrder = async (orderId: string, refundId: string) => {
   try {
-    await Order.updateOne(
+    return await Order.updateOne(
       { _id: orderId },
       {
         refundId,

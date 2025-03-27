@@ -54,7 +54,7 @@ export function validateOrderCancellationRequest(
   const { order_id } = req.params;
 
   if (!order_id) {
-    createApiResponse(res, "Order ID is required for cancellation.", 400);
+    createApiResponse(res, "Order ID is required for payment.", 400);
     return;
   }
 
@@ -134,6 +134,26 @@ export function validateOrderUpdateRequest(
   ];
   if (!validOrderStatus.includes(status)) {
     createApiResponse(res, "Invalid Order Status.", 400);
+    return;
+  }
+
+  next();
+}
+
+export function validateOrderRefnudRequest(
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): void {
+  const { orderId, refundId } = req.body;
+
+  if (!orderId) {
+    createApiResponse(res, "Order ID is required.", 400);
+    return;
+  }
+
+  if (!refundId) {
+    createApiResponse(res, "Refund ID is required.", 400);
     return;
   }
 

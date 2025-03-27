@@ -48,13 +48,19 @@ router.get(
   "/getAllOrders/rider/:rider_id",
   AuthMiddleware,
   validateFetchOrdersOfRiderRequest,
-  fetchAllOrdersOfRiderController
+  fetchAllOrdersOfRiderController 
 );
 router.put(
   "/updateStatus",
   AuthMiddleware,
   validateOrderUpdateRequest,
   orderUpdateStatusController
+);
+router.post(
+  "/refund",
+  AuthMiddleware,
+  validateOrderPaymentRequest,
+  orderPaymentController
 );
 
 export default router;
