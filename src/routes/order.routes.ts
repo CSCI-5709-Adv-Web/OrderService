@@ -50,7 +50,7 @@ router.get(
   validateFetchOrdersOfRiderRequest,
   fetchAllOrdersOfRiderController
 );
-router.get(
+router.put(
   "/updateStatus",
   AuthMiddleware,
   validateOrderUpdateRequest,
