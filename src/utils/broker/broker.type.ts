@@ -2,7 +2,7 @@ import { TOPIC_TYPE, OrderEvent, MessageType } from "../../types";
 
 export interface PublishType {
   headers: Record<string, any>;
-  topic: TOPIC_TYPE;
+  topic: TOPIC_TYPE;  // This will now accept "OrderDeliveryRequests"
   event: OrderEvent;
   message: Record<string, any>;
 }

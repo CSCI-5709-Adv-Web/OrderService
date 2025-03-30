@@ -13,6 +13,8 @@ import {
   getPricingDetailsFromValuationService,
   ValuationResp,
 } from "./valuation.service";
+import { NotificationService } from "./notification.service";
+import { logger } from "../utils";
 
 // Service function to create an order with pricing fetched from an external service
 export const createOrderService = async (orderData: CreateOrderProps) => {
@@ -68,18 +70,51 @@ export const orderPaymentService = async (
   orderId: string,
   paymentId: string
 ) => {
-  const fetchedOrder = await fetchOrderById(orderId);
-  if (
-    !(
-      fetchedOrder.status === "ORDER PLACED" ||
-      fetchedOrder.status === "ORDER CONFIRMED"
-    )
-  ) {
-    throw new Error("Pament already ");
-  }
+  logger.info(`Starting payment processing for order ${orderId}`);
+  
   try {
+    logger.info(`Fetching order ${orderId} from database`);
+    const fetchedOrder = await fetchOrderById(orderId);
+    
+    if (
+      !(
+        fetchedOrder.status === "ORDER PLACED" ||
+        fetchedOrder.status === "ORDER CONFIRMED"
+      )
+    ) {
+      logger.warn(`Order ${orderId} in invalid state: ${fetchedOrder.status}`);
+      throw new Error("Payment already processed or order in invalid state");
+    }
+    
+    logger.info(`Updating payment information for order ${orderId}`);
     await orderPayment(orderId, paymentId);
+    
+    logger.info(`Updating order status to PAYMENT_RECEIVED for order ${orderId}`);
+    await updateOrderStatus(orderId, "PAYMENT RECEIVED");
+    
+    // Send notification about successful payment with from_address, to_address, and amount
+    try {
+      logger.info(`Attempting to send notification for order ${orderId}`);
+      // Note: We've removed paymentId from the notification parameters
+      const notificationSent = await NotificationService.sendPaymentReceivedNotification(
+        orderId,
+        fetchedOrder.user_id
+      );
+      
+      if (notificationSent) {
+        logger.info(`Notification sent successfully for order ${orderId}`);
+      } else {
+        logger.warn(`Failed to send notification for order ${orderId}, but payment was processed successfully.`);
+      }
+    } catch (notificationError) {
+      // Just log the error but don't fail the payment process
+      logger.error(`Error sending notification for order ${orderId}: ${notificationError.message}`);
+    }
+    
+    logger.info(`Payment processing completed successfully for order ${orderId}`);
+    return { success: true };
   } catch (error) {
+    logger.error(`Error processing payment for order ${orderId}: ${error.message}`);
     throw new Error(error.message);
   }
 };
@@ -107,8 +142,21 @@ export const updateOrderStatusService = async (
   status: string
 ) => {
   try {
-    const fetchedOrders = await updateOrderStatus(orderId, status);
-    return fetchedOrders;
+    const result = await updateOrderStatus(orderId, status);
+    
+    // If the status is PAYMENT RECEIVED, send a notification
+    if (status === "PAYMENT RECEIVED") {
+      logger.info(`Order ${orderId} status changed to PAYMENT RECEIVED, sending notification`);
+      const order = await fetchOrderById(orderId);
+      
+      // Send notification with from_address, to_address, and amount
+      await NotificationService.sendPaymentReceivedNotification(
+        orderId, 
+        order.user_id
+      );
+    }
+    
+    return result;
   } catch (error) {
     throw new Error(error.message);
   }

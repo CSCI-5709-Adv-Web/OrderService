@@ -1,6 +1,7 @@
 import { Consumer, Kafka, logLevel, Partitioners, Producer } from "kafkajs";
 import { MessageBrokerType, MessageHandler, PublishType } from "./broker.type";
 import { MessageType, OrderEvent } from "../../types";
+import { logger } from "../logger";
 
 // Configuration Properties
 const CLIENT_ID = process.env.CLIENT_ID || "order-service";
@@ -33,10 +34,15 @@ const createTopic = async (topic: string[]) => {
   // get all the topics which are exist
   const topicExists = await admin.listTopics();
 
+  logger.info(`Checking if topics exist: ${topics.map(t => t.topic).join(', ')}`);
+  
   // check if topic is not exist then create it
   for (const t of topics) {
     if (!topicExists.includes(t.topic)) {
+      logger.info(`Creating topic: ${t.topic}`);
       await admin.createTopics({ topics: [t] });
+    } else {
+      logger.info(`Topic already exists: ${t.topic}`);
     }
   }
 
@@ -47,11 +53,11 @@ const createTopic = async (topic: string[]) => {
 // connect producer to kafka
 const connectProducer = async <T>(): Promise<T> => {
   // first create topics on which we want to connect producer
-  await createTopic(["OrderEvents"]);
+  await createTopic(["OrderDeliveryRequests"]);
 
   // check if producer is already connected
   if (producer) {
-    console.log("producer already connected with existing connection");
+    logger.info("Producer already connected with existing connection");
     return producer as unknown as T;
   }
   // if not
@@ -63,7 +69,7 @@ const connectProducer = async <T>(): Promise<T> => {
 
   // connect producer to kafka
   await producer.connect();
-  console.log("producer connected with a new connection");
+  logger.info("Producer connected with a new connection");
   // return connected producer
   return producer as unknown as T;
 };
@@ -140,8 +146,8 @@ const subscribe = async (messageHandler: MessageHandler, topic: string) => {
   // on each message received, it will call the provided message handler
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
-      // check if topic is not "OrderEvents" then we will not process the message
-      if (topic !== "OrderEvents") {
+      // Process messages from any of our topics
+      if (topic !== "OrderDeliveryRequests") {
         return;
       }
 

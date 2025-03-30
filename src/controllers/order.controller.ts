@@ -10,6 +10,8 @@ import {
 import { createApiResponse } from "../utils/response";
 import { logger } from "../utils";
 import { AuthenticatedRequest } from "../types";
+import { fetchOrderById } from "../repository/order.repository";
+import { NotificationService } from "../service/notification.service";
 
 // Controller to handle order creation
 export async function createOrderController(
@@ -48,9 +50,27 @@ export async function orderPaymentController(
   req: AuthenticatedRequest,
   res: Response
 ): Promise<void> {
+  logger.info(`Payment request received with body: ${JSON.stringify(req.body)}`);
   const { orderId, paymentId } = req.body;
   try {
-    await orderPaymentService(orderId, paymentId);
+    const result = await orderPaymentService(orderId, paymentId);
+    
+    // After processing payment, fetch the order to include from_address, to_address, and amount in response
+    const order = await fetchOrderById(orderId);
+    
+    // Return a successful response with from_address, to_address, and amount
+    createApiResponse(
+      res, 
+      "Payment processed successfully", 
+      200, 
+      { 
+        orderId, 
+        from_address: order.from_address,
+        to_address: order.to_address,
+        amount: order.pricing_details.total_cost,
+        status: "PAYMENT RECEIVED"
+      }
+    );
   } catch (error) {
     createApiResponse(
       res,
@@ -99,10 +119,32 @@ export async function orderUpdateStatusController(
   res: Response
 ): Promise<void> {
   const { orderId, status } = req.body;
+  logger.info(`Order status update request received for order ${orderId} to status ${status}`);
+  
   try {
     await updateOrderStatusService(orderId, status);
+    
+    // If status is PAYMENT RECEIVED, send notification
+    if (status === "PAYMENT RECEIVED") {
+      logger.info(`Status is PAYMENT RECEIVED for order ${orderId}, sending notification`);
+      try {
+        const order = await fetchOrderById(orderId);
+        
+        // Send notification with from_address, to_address, and amount
+        await NotificationService.sendPaymentReceivedNotification(
+          orderId,
+          order.user_id
+        );
+        
+        logger.info(`Notification sent for order ${orderId}`);
+      } catch (notificationError) {
+        logger.error(`Error sending notification: ${notificationError.message}`);
+      }
+    }
+    
     createApiResponse(res, "Order status updated successfully.", 200);
   } catch (error) {
+    logger.error(`Error updating order status: ${error.message}`);
     createApiResponse(res, "Failed to update order: " + error.message, 500);
   }
 }
