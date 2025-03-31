@@ -33,16 +33,11 @@ spec:
                 configMapKeyRef:
                   name: order-service-configmap
                   key: port
-            - name: VALUATION_SERVICE
-              valueFrom:
-                configMapKeyRef:
-                  name: order-service-configmap
-                  key: valuation-service
             - name: PAYMENT_SERVICE
               valueFrom:
                 configMapKeyRef:
                   name: order-service-configmap
-                  key: payment-service
+                  key: payment_service
             - name: DB_URL
               valueFrom:
                 secretKeyRef:

@@ -6,4 +6,4 @@ metadata:
     app: order-service-configmap
 data:
   port: "9002"
-  payment-service: "http://payment-api:80/payment"
+  payment_service: "http://payment-service/payment"
