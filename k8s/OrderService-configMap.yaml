@@ -7,3 +7,4 @@ metadata:
 data:
   port: "9002"
   payment_service: "http://payment-service/payment"
+#
