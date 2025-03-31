@@ -27,7 +27,6 @@ const orderSchema = new Schema(
         "ORDER CONFIRMED",
         "PAYMENT RECEIVED",
         "AWAITING PICKUP",
-        "PICKED UP",
         "OUT FOR DELIVERY",
         "DELIVERED",
         "CANCELLED",
