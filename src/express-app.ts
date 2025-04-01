@@ -1,10 +1,14 @@
-import express, { NextFunction, Request, Response } from "express";
-import cors from "cors";
-import orderRoutes from "./routes/order.routes";
-import { httpLogger, HandleErrorWithLogger } from "./utils";
-import { InitializeBroker } from "./service/broker.service";
-import { logger } from "./utils";
+import express, { type NextFunction, type Request, type Response } from "express"
+import cors from "cors"
+import orderRoutes from "./routes/order.routes"
+import { httpLogger, HandleErrorWithLogger } from "./utils"
+import { InitializeBroker } from "./service/broker.service"
+import { logger } from "./utils"
 
+// Import the Swagger UI setup
+import { serve, setup } from "./swagger";
+
+// Update the ExpressApp function to include Swagger UI
 export const ExpressApp = async () => {
   const app = express();
   app.use(cors());
@@ -19,6 +23,9 @@ export const ExpressApp = async () => {
     logger.error(`Failed to initialize message broker: ${error.message}`);
     // Continue app startup even if broker fails - we can handle messages later
   }
+
+  // Add Swagger UI documentation
+  app.use("/api-docs", serve, setup);
 
   app.use("/order", orderRoutes);
 
